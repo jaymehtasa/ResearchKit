@@ -196,6 +196,14 @@ ORK_CLASS_AVAILABLE
 @property (nonatomic, copy, readonly, nullable) ORKAnswerFormat *answerFormat;
 
 /**
+     A boolean value indicating wether the question is initially hidden by default.
+     
+     The default value of this property is `NO`. When `YES` the question will be hidden in the form
+     and displayed when the user taps the form item.
+ */
+@property (nonatomic, getter=isHidden) BOOL hidden;
+    
+/**
  Returns an form item that can be used for confirming a text entry.
  
  This form item is intended to be used with an `ORKFormStep` in order to confirm a previous

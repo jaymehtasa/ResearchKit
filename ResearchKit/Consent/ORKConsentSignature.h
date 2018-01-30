@@ -53,97 +53,106 @@ NS_ASSUME_NONNULL_BEGIN
  */
 ORK_CLASS_AVAILABLE
 @interface ORKConsentSignature : NSObject <NSSecureCoding, NSCopying>
-
-/// @name Factory methods
-
-/**
- Returns a fully populated signature.
- 
- Use this factory method when you need to prepopulate the investigator's signature in a generated consent document.
- 
- @param title               The title of the signatory.
- @param dateFormatString    The format string to use when formatting the date of signature.
- @param identifier          The identifier of the signature, unique within this document.
- @param givenName           The given name of the signatory.
- @param familyName          The family name of the signatory.
- @param signatureImage      An image of the signature.
- @param signatureDate       The date on which the signature was obtained, represented as a string.
- */
+    
+    /// @name Factory methods
+    
+    /**
+     Returns a fully populated signature.
+     
+     Use this factory method when you need to prepopulate the investigator's signature in a generated consent document.
+     
+     @param title               The title of the signatory.
+     @param dateFormatString    The format string to use when formatting the date of signature.
+     @param identifier          The identifier of the signature, unique within this document.
+     @param givenName           The given name of the signatory.
+     @param familyName          The family name of the signatory.
+     @param signatureImage      An image of the signature.
+     @param signatureDate       The date on which the signature was obtained, represented as a string.
+     */
 + (ORKConsentSignature *)signatureForPersonWithTitle:(nullable NSString *)title
                                     dateFormatString:(nullable NSString *)dateFormatString
                                           identifier:(NSString *)identifier
                                            givenName:(nullable NSString *)givenName
                                           familyName:(nullable NSString *)familyName
+                                               email:(nullable NSString *)email
                                       signatureImage:(nullable UIImage *)signatureImage
                                           dateString:(nullable NSString *)signatureDate;
-
-/**
- Returns a signature to be collected.
- 
- Use this factory method when representing a request to collect a signature for a consent review step.
- 
- @param title               The title of the signatory.
- @param dateFormatString    The format string to use when formatting the date of signature.
- @param identifier          The identifier of the signature, unique within this document.
- */
+    
+    /**
+     Returns a signature to be collected.
+     
+     Use this factory method when representing a request to collect a signature for a consent review step.
+     
+     @param title               The title of the signatory.
+     @param dateFormatString    The format string to use when formatting the date of signature.
+     @param identifier          The identifier of the signature, unique within this document.
+     */
 + (ORKConsentSignature *)signatureForPersonWithTitle:(nullable NSString *)title
                                     dateFormatString:(nullable NSString *)dateFormatString
                                           identifier:(NSString *)identifier;
-
-/// @name Consent review configuration
-
-/**
- A Boolean value indicating whether the user needs to enter their name during consent review.
- 
- The default value of this property is `YES`. In a consent review step, the name entry screen is not displayed when the value of this property is `NO`.
- */
-@property (nonatomic, assign) BOOL requiresName;
-
-/**
- A Boolean value indicating whether the user needs to draw a signature during consent review.
- 
- The default value of this property is `YES`. In a consent review step, the signature entry
- screen is not shown when this property is `NO`.
- */
-@property (nonatomic, assign) BOOL requiresSignatureImage;
-
-/// @name Identifying signatories
-
-/**
- The identifier for this signature.
- 
- The identifier should be unique in the document. It can be used to find or
- replace a specific signature in an `ORKConsentDocument` object. The identifier is also reproduced in
- the `ORKConsentSignatureResult` object produced by an `ORKConsentReviewStep` object.
- */
-@property (nonatomic, copy) NSString *identifier;
-
-/// @name Personal information.
-
-/// The title of the signatory.
-@property (nonatomic, copy, nullable) NSString *title;
-
-/// The given name (first name in Western languages)
-@property (nonatomic, copy, nullable) NSString *givenName;
-
-/// The family name (last name in Western languages)
-@property (nonatomic, copy, nullable) NSString *familyName;
-
-/// The image of the signature, if any.
-@property (nonatomic, copy, nullable) UIImage *signatureImage;
-
-/// The date associated with the signature.
-@property (nonatomic, copy, nullable) NSString *signatureDate;
-
-/**
- The date format string to be used when producing a date string for the PDF
- or consent review.
- 
- For example, @"yyyy-MM-dd 'at' HH:mm". When the value of this property is `nil`,
- the current date and time for the current locale is used.
- */
-@property (nonatomic, copy, nullable) NSString *signatureDateFormatString;
-
-@end
+    
+    /// @name Consent review configuration
+    
+    /**
+     A Boolean value indicating whether the user needs to enter their name during consent review.
+     
+     The default value of this property is `YES`. In a consent review step, the name entry screen is not displayed when the value of this property is `NO`.
+     */
+    @property (nonatomic, assign) BOOL requiresName;
+    
+    /**
+     A Boolean value indicating whether the user needs to draw a signature during consent review.
+     
+     The default value of this property is `YES`. In a consent review step, the signature entry
+     screen is not shown when this property is `NO`.
+     */
+    @property (nonatomic, assign) BOOL requiresSignatureImage;
+    
+    /** A Boolean value indicating whether the user needs to enter their email during consent review.
+     */
+    @property (nonatomic, assign) BOOL requiresEmail;
+    
+    /// @name Identifying signatories
+    
+    /**
+     The identifier for this signature.
+     
+     The identifier should be unique in the document. It can be used to find or
+     replace a specific signature in an `ORKConsentDocument` object. The identifier is also reproduced in
+     the `ORKConsentSignatureResult` object produced by an `ORKConsentReviewStep` object.
+     */
+    @property (nonatomic, copy) NSString *identifier;
+    
+    /// @name Personal information.
+    
+    /// The title of the signatory.
+    @property (nonatomic, copy, nullable) NSString *title;
+    
+    /// The given name (first name in Western languages)
+    @property (nonatomic, copy, nullable) NSString *givenName;
+    
+    /// The family name (last name in Western languages)
+    @property (nonatomic, copy, nullable) NSString *familyName;
+    
+    /// The email
+    @property (nonatomic, copy, nullable) NSString *email;
+    
+    /// The image of the signature, if any.
+    @property (nonatomic, copy, nullable) UIImage *signatureImage;
+    
+    /// The date associated with the signature.
+    @property (nonatomic, copy, nullable) NSString *signatureDate;
+    
+    /**
+     The date format string to be used when producing a date string for the PDF
+     or consent review.
+     
+     For example, @"yyyy-MM-dd 'at' HH:mm". When the value of this property is `nil`,
+     the current date and time for the current locale is used.
+     */
+    @property (nonatomic, copy, nullable) NSString *signatureDateFormatString;
+    
+    @end
 
 NS_ASSUME_NONNULL_END
+
