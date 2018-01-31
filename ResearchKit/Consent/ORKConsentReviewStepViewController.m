@@ -38,15 +38,11 @@
 #import "ORKTaskViewController_Internal.h"
 
 #import "ORKAnswerFormat_Internal.h"
-#import "ORKCollectionResult_Private.h"
 #import "ORKConsentDocument_Internal.h"
 #import "ORKConsentReviewStep.h"
 #import "ORKConsentSignature.h"
-#import "ORKConsentSignatureResult.h"
 #import "ORKFormStep.h"
-#import "ORKQuestionResult_Private.h"
 #import "ORKResult.h"
-#import "ORKSignatureResult_Private.h"
 #import "ORKSignatureStep.h"
 #import "ORKStep_Private.h"
 
@@ -63,28 +59,31 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
 @interface ORKConsentReviewStepViewController () <UIPageViewControllerDelegate, ORKStepViewControllerDelegate, ORKConsentReviewControllerDelegate> {
     ORKConsentSignature *_currentSignature;
     UIPageViewController *_pageViewController;
-
+    
     NSMutableArray *_pageIndices;
     
     NSString *_signatureFirst;
     NSString *_signatureLast;
     UIImage *_signatureImage;
+    NSString *_signatureEmail;
     BOOL _documentReviewed;
     
     NSUInteger _currentPageIndex;
 }
-
-@end
+    
+    @end
 
 
 @implementation ORKConsentReviewStepViewController
-
+    
 - (instancetype)initWithConsentReviewStep:(ORKConsentReviewStep *)step result:(ORKConsentSignatureResult *)result {
     self = [super initWithStep:step];
     if (self) {
         _signatureFirst = [result.signature givenName];
         _signatureLast = [result.signature familyName];
         _signatureImage = [result.signature signatureImage];
+        _signatureEmail = [result.signature email];
+        
         _documentReviewed = NO;
         
         _currentSignature = [result.signature copy];
@@ -93,7 +92,7 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
     }
     return self;
 }
-
+    
 - (void)stepDidChange {
     if (![self isViewLoaded]) {
         return;
@@ -116,7 +115,7 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
     
     [self goToPage:0 animated:NO];
 }
-
+    
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -138,13 +137,13 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
     
     [self stepDidChange];
 }
-
+    
 - (UIBarButtonItem *)goToPreviousPageButtonItem {
     UIBarButtonItem *button = [UIBarButtonItem ork_backBarButtonItemWithTarget:self action:@selector(goToPreviousPage)];
     button.accessibilityLabel = ORKLocalizedString(@"AX_BUTTON_BACK", nil);
     return button;
 }
-
+    
 - (void)updateNavLeftBarButtonItem {
     if (_currentPageIndex == 0) {
         [super updateNavLeftBarButtonItem];
@@ -152,7 +151,7 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
         self.navigationItem.leftBarButtonItem = [self goToPreviousPageButtonItem];
     }
 }
-
+    
 - (void)updateBackButton {
     if (_currentPageIndex == NSNotFound) {
         return;
@@ -160,15 +159,16 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
     
     [self updateNavLeftBarButtonItem];
 }
-
-static NSString *const _NameFormIdentifier = @"nameForm";
-static NSString *const _GivenNameIdentifier = @"given";
-static NSString *const _FamilyNameIdentifier = @"family";
-
+    
+    static NSString *const _NameFormIdentifier = @"nameForm";
+    static NSString *const _GivenNameIdentifier = @"given";
+    static NSString *const _FamilyNameIdentifier = @"family";
+    static NSString *const _EmailIdentifier = @"email";
+    
 - (ORKFormStepViewController *)makeNameFormViewController {
     ORKFormStep *formStep = [[ORKFormStep alloc] initWithIdentifier:_NameFormIdentifier
-                                                            title:self.step.title ? : ORKLocalizedString(@"CONSENT_NAME_TITLE", nil)
-                                                             text:self.step.text];
+                                                              title:self.step.title ? : ORKLocalizedString(@"CONSENT_NAME_TITLE", nil)
+                                                               text:self.step.text];
     formStep.useSurveyMode = NO;
     
     ORKTextAnswerFormat *nameAnswerFormat = [ORKTextAnswerFormat textAnswerFormat];
@@ -177,21 +177,29 @@ static NSString *const _FamilyNameIdentifier = @"family";
     nameAnswerFormat.autocorrectionType = UITextAutocorrectionTypeNo;
     nameAnswerFormat.spellCheckingType = UITextSpellCheckingTypeNo;
     ORKFormItem *givenNameFormItem = [[ORKFormItem alloc] initWithIdentifier:_GivenNameIdentifier
-                                                              text:ORKLocalizedString(@"CONSENT_NAME_GIVEN", nil)
-                                                      answerFormat:nameAnswerFormat];
+                                                                        text:ORKLocalizedString(@"CONSENT_NAME_GIVEN", nil)
+                                                                answerFormat:nameAnswerFormat];
     givenNameFormItem.placeholder = ORKLocalizedString(@"CONSENT_NAME_PLACEHOLDER", nil);
     
     ORKFormItem *familyNameFormItem = [[ORKFormItem alloc] initWithIdentifier:_FamilyNameIdentifier
-                                                             text:ORKLocalizedString(@"CONSENT_NAME_FAMILY", nil)
-                                                     answerFormat:nameAnswerFormat];
+                                                                         text:ORKLocalizedString(@"CONSENT_NAME_FAMILY", nil)
+                                                                 answerFormat:nameAnswerFormat];
     familyNameFormItem.placeholder = ORKLocalizedString(@"CONSENT_NAME_PLACEHOLDER", nil);
+    
+    ORKEmailAnswerFormat *emailAnswerFormat = [ORKEmailAnswerFormat emailAnswerFormat];
+    ORKFormItem *emailFormItem = [[ORKFormItem alloc] initWithIdentifier:_EmailIdentifier
+                                                                    text:ORKLocalizedString(@"CONSENT_EMAIL", nil)
+                                                            answerFormat:emailAnswerFormat];
+    emailFormItem.placeholder = ORKLocalizedString(@"CONSENT_EMAIL_PLACEHOLDER", nil);
+    
     
     givenNameFormItem.optional = NO;
     familyNameFormItem.optional = NO;
+    emailFormItem.optional = NO;
     
-    NSArray *formItems = @[givenNameFormItem, familyNameFormItem];
+    NSArray *formItems = @[givenNameFormItem, familyNameFormItem, emailFormItem];
     if (ORKCurrentLocalePresentsFamilyNameFirst()) {
-        formItems = @[familyNameFormItem, givenNameFormItem];
+        formItems = @[familyNameFormItem, givenNameFormItem, emailFormItem];
     }
     
     [formStep setFormItems:formItems];
@@ -202,14 +210,17 @@ static NSString *const _FamilyNameIdentifier = @"family";
     givenNameDefault.textAnswer = _signatureFirst;
     ORKTextQuestionResult *familyNameDefault = [[ORKTextQuestionResult alloc] initWithIdentifier:_FamilyNameIdentifier];
     familyNameDefault.textAnswer = _signatureLast;
-    ORKStepResult *defaults = [[ORKStepResult alloc] initWithStepIdentifier:_NameFormIdentifier results:@[givenNameDefault, familyNameDefault]];
+    ORKTextQuestionResult *emailDefault = [[ORKTextQuestionResult alloc] initWithIdentifier:_EmailIdentifier];
+    emailDefault.textAnswer = _signatureEmail;
+    
+    ORKStepResult *defaults = [[ORKStepResult alloc] initWithStepIdentifier:_NameFormIdentifier results:@[givenNameDefault, familyNameDefault, emailDefault]];
     
     ORKFormStepViewController *viewController = [[ORKFormStepViewController alloc] initWithStep:formStep result:defaults];
     viewController.delegate = self;
     
     return viewController;
 }
-
+    
 - (ORKConsentReviewController *)makeDocumentReviewViewController {
     ORKConsentSignature *originalSignature = [self.consentReviewStep signature];
     ORKConsentDocument *origninalDocument = self.consentReviewStep.consentDocument;
@@ -226,18 +237,23 @@ static NSString *const _FamilyNameIdentifier = @"family";
             signature.givenName = _signatureFirst;
             signature.familyName = _signatureLast;
         }
+        
+        if (signature.requiresEmail) {
+            NSLog(@"ADDING EMAIL ADDRESS %@", _signatureEmail);
+            signature.email = _signatureEmail;
+        }
     }
     
     NSString *html = [document mobileHTMLWithTitle:ORKLocalizedString(@"CONSENT_REVIEW_TITLE", nil)
-                                             detail:ORKLocalizedString(@"CONSENT_REVIEW_INSTRUCTION", nil)];
-
+                                            detail:ORKLocalizedString(@"CONSENT_REVIEW_INSTRUCTION", nil)];
+    
     ORKConsentReviewController *reviewViewController = [[ORKConsentReviewController alloc] initWithHTML:html delegate:self];
     reviewViewController.localizedReasonForConsent = [[self consentReviewStep] reasonForConsent];
     return reviewViewController;
 }
-
-static NSString *const _SignatureStepIdentifier = @"signatureStep";
-
+    
+    static NSString *const _SignatureStepIdentifier = @"signatureStep";
+    
 - (ORKSignatureStepViewController *)makeSignatureViewController {
     ORKSignatureStep *step = [[ORKSignatureStep alloc] initWithIdentifier:_SignatureStepIdentifier];
     step.optional = NO;
@@ -245,12 +261,12 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
     signatureController.delegate = self;
     return signatureController;
 }
-
+    
 - (void)goToPreviousPage {
     [self navigateDelta:-1];
     UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, nil);
 }
-
+    
 - (UIViewController *)viewControllerForIndex:(NSUInteger)index {
     if (index >= _pageIndices.count) {
         return nil;
@@ -281,7 +297,7 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
     }
     return viewController;
 }
-
+    
 - (ORKStepResult *)result {
     ORKStepResult *parentResult = [super result];
     if (!_currentSignature) {
@@ -293,6 +309,10 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
         }
         if (_currentSignature.requiresSignatureImage) {
             _currentSignature.signatureImage = _signatureImage;
+        }
+        
+        if (_currentSignature.requiresEmail) {
+            _currentSignature.email = _signatureEmail;
         }
         
         if (_currentSignature.signatureDateFormatString.length > 0) {
@@ -310,25 +330,23 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
     result.consented = _documentReviewed;
     result.startDate = parentResult.startDate;
     result.endDate = parentResult.endDate;
-    
-    // Add the result
-    parentResult.results = [self.addedResults arrayByAddingObject:result] ? : @[result];
+    parentResult.results = @[result];
     
     return parentResult;
 }
-
+    
 - (ORKConsentReviewStep *)consentReviewStep {
     assert(self.step == nil || [self.step isKindOfClass:[ORKConsentReviewStep class]]);
     return (ORKConsentReviewStep *)self.step;
 }
-
+    
 - (void)notifyDelegateOnResultChange {
     _currentSignature = nil;
     [super notifyDelegateOnResultChange];
 }
-
+    
 #pragma mark ORKStepViewControllerDelegate
-
+    
 - (void)stepViewController:(ORKStepViewController *)stepViewController didFinishWithNavigationDirection:(ORKStepViewControllerNavigationDirection)direction {
     if (_currentPageIndex == NSNotFound) {
         return;
@@ -337,7 +355,7 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
     NSInteger delta = (direction == ORKStepViewControllerNavigationDirectionForward) ? 1 : -1;
     [self navigateDelta:delta];
 }
-
+    
 - (void)navigateDelta:(NSInteger)delta {
     // Entry point for forward/back navigation.
     NSUInteger pageCount = _pageIndices.count;
@@ -353,7 +371,7 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
         [self goToPage:(_currentPageIndex + delta) animated:YES];
     }
 }
-
+    
 - (void)goToPage:(NSInteger)page animated:(BOOL)animated {
     UIViewController *viewController = [self viewControllerForIndex:page];
     
@@ -392,7 +410,7 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
         }
     }];
 }
-
+    
 - (void)stepViewControllerResultDidChange:(ORKStepViewController *)stepViewController {
     if ([stepViewController.step.identifier isEqualToString:_NameFormIdentifier]) {
         // If this is the form step then update the values from the form
@@ -401,6 +419,8 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
         _signatureFirst = (NSString *)fnr.textAnswer;
         ORKTextQuestionResult *lnr = (ORKTextQuestionResult *)[result resultForIdentifier:_FamilyNameIdentifier];
         _signatureLast = (NSString *)lnr.textAnswer;
+        ORKTextQuestionResult *eml = (ORKTextQuestionResult *)[result resultForIdentifier:_EmailIdentifier];
+        _signatureEmail = (NSString *)eml.textAnswer;
         [self notifyDelegateOnResultChange];
         
     } else if ([stepViewController.step.identifier isEqualToString:_SignatureStepIdentifier]) {
@@ -410,73 +430,76 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
             if ([obj isKindOfClass:[ORKSignatureResult class]]) {
                 _signatureImage = ((ORKSignatureResult *)obj).signatureImage;
                 *stop = YES;
-    }
+            }
         }];
         [self notifyDelegateOnResultChange];
     }
 }
-
+    
 - (void)stepViewControllerDidFail:(ORKStepViewController *)stepViewController withError:(NSError *)error {
     ORKStrongTypeOf(self.delegate) strongDelegate = self.delegate;
     if ([strongDelegate respondsToSelector:@selector(stepViewControllerDidFail:withError:)]) {
         [strongDelegate stepViewControllerDidFail:self withError:error];
     }
 }
-
+    
 - (BOOL)stepViewControllerHasNextStep:(ORKStepViewController *)stepViewController {
     if (_currentPageIndex < (_pageIndices.count - 1)) {
         return YES;
     }
     return [self hasNextStep];
 }
-
+    
 - (BOOL)stepViewControllerHasPreviousStep:(ORKStepViewController *)stepViewController {
     return [self hasPreviousStep];
 }
-
+    
 - (void)stepViewController:(ORKStepViewController *)stepViewController recorder:(ORKRecorder *)recorder didFailWithError:(NSError *)error {
     ORKStrongTypeOf(self.delegate) strongDelegate = self.delegate;
     if ([strongDelegate respondsToSelector:@selector(stepViewController:recorder:didFailWithError:)]) {
         [strongDelegate stepViewController:self recorder:recorder didFailWithError:error];
     }
 }
-
+    
 #pragma mark ORKConsentReviewControllerDelegate
-
+    
 - (void)consentReviewControllerDidAcknowledge:(ORKConsentReviewController *)consentReviewController {
     _documentReviewed = YES;
     [self notifyDelegateOnResultChange];
     [self navigateDelta:1];
 }
-
+    
 - (void)consentReviewControllerDidCancel:(ORKConsentReviewController *)consentReviewController {
     _signatureFirst = nil;
     _signatureLast = nil;
     _signatureImage = nil;
+    _signatureEmail = nil;
     _documentReviewed = NO;
     [self notifyDelegateOnResultChange];
     
     [self goForward];
 }
-
-static NSString *const _ORKCurrentSignatureRestoreKey = @"currentSignature";
-static NSString *const _ORKSignatureFirstRestoreKey = @"signatureFirst";
-static NSString *const _ORKSignatureLastRestoreKey = @"signatureLast";
-static NSString *const _ORKSignatureImageRestoreKey = @"signatureImage";
-static NSString *const _ORKDocumentReviewedRestoreKey = @"documentReviewed";
-static NSString *const _ORKCurrentPageIndexRestoreKey = @"currentPageIndex";
-
+    
+    static NSString *const _ORKCurrentSignatureRestoreKey = @"currentSignature";
+    static NSString *const _ORKSignatureFirstRestoreKey = @"signatureFirst";
+    static NSString *const _ORKSignatureLastRestoreKey = @"signatureLast";
+    static NSString *const _ORKSignatureImageRestoreKey = @"signatureImage";
+    static NSString *const _ORKSignatureEmailRestoreKey = @"signatureEmail";
+    static NSString *const _ORKDocumentReviewedRestoreKey = @"documentReviewed";
+    static NSString *const _ORKCurrentPageIndexRestoreKey = @"currentPageIndex";
+    
 - (void)encodeRestorableStateWithCoder:(NSCoder *)coder {
     [super encodeRestorableStateWithCoder:coder];
     
     [coder encodeObject:_currentSignature forKey:_ORKCurrentSignatureRestoreKey];
     [coder encodeObject:_signatureFirst forKey:_ORKSignatureFirstRestoreKey];
     [coder encodeObject:_signatureLast forKey:_ORKSignatureLastRestoreKey];
+    [coder encodeObject:_signatureEmail forKey:_ORKSignatureEmailRestoreKey];
     [coder encodeObject:_signatureImage forKey:_ORKSignatureImageRestoreKey];
     [coder encodeBool:_documentReviewed forKey:_ORKDocumentReviewedRestoreKey];
     [coder encodeInteger:_currentPageIndex forKey:_ORKCurrentPageIndexRestoreKey];
 }
-
+    
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder {
     [super decodeRestorableStateWithCoder:coder];
     
@@ -486,10 +509,12 @@ static NSString *const _ORKCurrentPageIndexRestoreKey = @"currentPageIndex";
     _signatureFirst = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureFirstRestoreKey];
     _signatureLast = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureLastRestoreKey];
     _signatureImage = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureImageRestoreKey];
+    _signatureEmail = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureEmailRestoreKey];
     _documentReviewed = [coder decodeBoolForKey:_ORKDocumentReviewedRestoreKey];
     _currentPageIndex = [coder decodeIntegerForKey:_ORKCurrentPageIndexRestoreKey];
     
     [self goToPage:_currentPageIndex animated:NO];
 }
+    
+    @end
 
-@end

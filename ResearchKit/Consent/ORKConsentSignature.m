@@ -35,18 +35,20 @@
 
 
 @implementation ORKConsentSignature
-
+    
 + (ORKConsentSignature *)signatureForPersonWithTitle:(NSString *)title
-                                   dateFormatString:(NSString *)dateFormatString
-                                         identifier:(NSString *)identifier
-                                          givenName:(NSString *)givenName
-                                           familyName:(NSString *)familyName
-                                     signatureImage:(UIImage *)signatureImage
-                                         dateString:(NSString *)signatureDate {
+                                    dateFormatString:(NSString *)dateFormatString
+                                          identifier:(NSString *)identifier
+                                           givenName:(NSString *)givenName
+                                          familyName:(NSString *)familyName
+                                               email:(NSString *)email
+                                      signatureImage:(UIImage *)signatureImage
+                                          dateString:(NSString *)signatureDate {
     ORKConsentSignature *sig = [ORKConsentSignature new];
     sig.title = title;
     sig.givenName = givenName;
     sig.familyName = familyName;
+    sig.email = email;
     sig.signatureImage = signatureImage;
     sig.signatureDate = signatureDate;
     sig.identifier = identifier;
@@ -54,34 +56,35 @@
     
     return sig;
 }
-
+    
 + (ORKConsentSignature *)signatureForPersonWithTitle:(NSString *)title
-                                   dateFormatString:(NSString *)dateFormatString
-                                         identifier:(NSString *)identifier {
-    ORKConsentSignature *sig = [ORKConsentSignature signatureForPersonWithTitle:title dateFormatString:dateFormatString identifier:identifier givenName:nil familyName:nil signatureImage:nil dateString:nil ];
+                                    dateFormatString:(NSString *)dateFormatString
+                                          identifier:(NSString *)identifier {
+    ORKConsentSignature *sig = [ORKConsentSignature signatureForPersonWithTitle:title dateFormatString:dateFormatString identifier:identifier givenName:nil familyName:nil email:nil signatureImage:nil dateString:nil ];
     return sig;
 }
-
+    
 - (instancetype)init {
     self = [super init];
     if (self) {
         _requiresName = YES;
+        _requiresEmail = YES;
         _requiresSignatureImage = YES;
         self.identifier = [NSUUID UUID].UUIDString;
     }
     return self;
 }
-
+    
 - (void)setIdentifier:(NSString *)identifier {
     ORKThrowInvalidArgumentExceptionIfNil(identifier);
     
     _identifier = identifier;
 }
-
+    
 + (BOOL)supportsSecureCoding {
     return YES;
 }
-
+    
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super init];
     if (self) {
@@ -97,7 +100,7 @@
     }
     return self;
 }
-
+    
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     ORK_ENCODE_OBJ(aCoder, identifier);
     ORK_ENCODE_OBJ(aCoder, title);
@@ -109,7 +112,7 @@
     ORK_ENCODE_IMAGE(aCoder, signatureImage);
     ORK_ENCODE_OBJ(aCoder, signatureDateFormatString);
 }
-
+    
 - (BOOL)isEqual:(id)object {
     if ([self class] != [object class]) {
         return NO;
@@ -126,17 +129,19 @@
             && (self.requiresName == castObject.requiresName)
             && (self.requiresSignatureImage == castObject.requiresSignatureImage));
 }
-
+    
 - (NSUInteger)hash {
     return _identifier.hash ^ _title.hash ^ _givenName.hash ^ _familyName.hash ^ _signatureDate.hash;
 }
-
+    
 - (instancetype)copyWithZone:(NSZone *)zone {
     ORKConsentSignature *sig = [[[self class] allocWithZone:zone] init];
     sig.identifier = [_identifier copy];
     sig.title = [_title copy];
     sig.givenName = [_givenName copy];
     sig.familyName = [_familyName copy];
+    sig.email = [_email copy];
+    sig->_requiresEmail = _requiresEmail;
     sig->_requiresName = _requiresName;
     sig->_requiresSignatureImage = _requiresSignatureImage;
     sig.signatureImage = _signatureImage;
@@ -144,5 +149,6 @@
     sig.signatureDate = [_signatureDate copy];
     return sig;
 }
+    
+    @end
 
-@end
