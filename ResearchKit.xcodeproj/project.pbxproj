@@ -55,6 +55,7 @@
 		10FF9AD71B7A045E00ECB5B4 /* ORKSeparatorView.h in Headers */ = {isa = PBXBuildFile; fileRef = 10FF9AD51B7A045E00ECB5B4 /* ORKSeparatorView.h */; };
 		10FF9AD81B7A045E00ECB5B4 /* ORKSeparatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 10FF9AD61B7A045E00ECB5B4 /* ORKSeparatorView.m */; };
 		10FF9ADB1B7BA78400ECB5B4 /* ORKOrderedTask_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 10FF9AD91B7BA78400ECB5B4 /* ORKOrderedTask_Private.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		13CAAACE202B05C2002964B6 /* Web2RKCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13CAAACB202B0592002964B6 /* Web2RKCommon.framework */; };
 		147503AF1AEE8071004B17F3 /* ORKAudioGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 147503AD1AEE8071004B17F3 /* ORKAudioGenerator.h */; };
 		147503B01AEE8071004B17F3 /* ORKAudioGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 147503AE1AEE8071004B17F3 /* ORKAudioGenerator.m */; };
 		147503B71AEE807C004B17F3 /* ORKToneAudiometryContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = 147503B11AEE807C004B17F3 /* ORKToneAudiometryContentView.h */; };
@@ -646,6 +647,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		13CAAACA202B0592002964B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13CAAAC6202B0591002964B6 /* Web2RKCommon.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 153A97B41F347E700080E319;
+			remoteInfo = Web2RKCommon;
+		};
+		13CAAACC202B05AF002964B6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13CAAAC6202B0591002964B6 /* Web2RKCommon.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 153A97B31F347E700080E319;
+			remoteInfo = Web2RKCommon;
+		};
 		86CC8EA11AC09332001CCD89 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3FFF18351829DB1D00167070 /* Project object */;
@@ -696,6 +711,7 @@
 		10FF9AD51B7A045E00ECB5B4 /* ORKSeparatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORKSeparatorView.h; sourceTree = "<group>"; };
 		10FF9AD61B7A045E00ECB5B4 /* ORKSeparatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORKSeparatorView.m; sourceTree = "<group>"; };
 		10FF9AD91B7BA78400ECB5B4 /* ORKOrderedTask_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORKOrderedTask_Private.h; sourceTree = "<group>"; };
+		13CAAAC6202B0591002964B6 /* Web2RKCommon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Web2RKCommon.xcodeproj; path = Web2RKCommon/Web2RKCommon.xcodeproj; sourceTree = "<group>"; };
 		147503AD1AEE8071004B17F3 /* ORKAudioGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORKAudioGenerator.h; sourceTree = "<group>"; };
 		147503AE1AEE8071004B17F3 /* ORKAudioGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORKAudioGenerator.m; sourceTree = "<group>"; };
 		147503B11AEE807C004B17F3 /* ORKToneAudiometryContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORKToneAudiometryContentView.h; sourceTree = "<group>"; };
@@ -1344,6 +1360,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13CAAACE202B05C2002964B6 /* Web2RKCommon.framework in Frameworks */,
 				B1C7955E1A9FBF04007279BA /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1433,6 +1450,14 @@
 				10FF9AD21B79F5EA00ECB5B4 /* ORKHolePegTestRemovePegView.m */,
 			);
 			name = "Remove Step";
+			sourceTree = "<group>";
+		};
+		13CAAAC7202B0591002964B6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				13CAAACB202B0592002964B6 /* Web2RKCommon.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		147503AC1AEE8058004B17F3 /* Tone Audiometry */ = {
@@ -1656,6 +1681,7 @@
 		3FFF183F1829DB1D00167070 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				13CAAAC6202B0591002964B6 /* Web2RKCommon.xcodeproj */,
 				B1C7955D1A9FBF04007279BA /* HealthKit.framework */,
 			);
 			name = Frameworks;
@@ -3108,6 +3134,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				13CAAACD202B05AF002964B6 /* PBXTargetDependency */,
 			);
 			name = ResearchKit;
 			productName = ResearchKit;
@@ -3193,6 +3220,12 @@
 			mainGroup = 3FFF18341829DB1D00167070;
 			productRefGroup = 3FFF183E1829DB1D00167070 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 13CAAAC7202B0591002964B6 /* Products */;
+					ProjectRef = 13CAAAC6202B0591002964B6 /* Web2RKCommon.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				B183A4731A8535D100C76870 /* ResearchKit */,
@@ -3201,6 +3234,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		13CAAACB202B0592002964B6 /* Web2RKCommon.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Web2RKCommon.framework;
+			remoteRef = 13CAAACA202B0592002964B6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		86CC8E981AC09332001CCD89 /* Resources */ = {
@@ -3571,6 +3614,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		13CAAACD202B05AF002964B6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Web2RKCommon;
+			targetProxy = 13CAAACC202B05AF002964B6 /* PBXContainerItemProxy */;
+		};
 		86CC8EA21AC09332001CCD89 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B183A4731A8535D100C76870 /* ResearchKit */;
