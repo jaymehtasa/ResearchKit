@@ -148,12 +148,12 @@
             }
             
             if (nil == matchedChoice) {
-                NSAssert([answerValue isKindOfClass:[NSNumber class]], @"");
-                if (_isValuePicker) {
-                    matchedChoice = _choices[((NSNumber *)answerValue).unsignedIntegerValue + 1];
-                } else {
-                    matchedChoice = _choices[((NSNumber *)answerValue).unsignedIntegerValue];
-                }
+//                NSAssert([answerValue isKindOfClass:[NSNumber class]], @"");
+//                if (_isValuePicker) {
+//                    matchedChoice = _choices[((NSNumber *)answerValue).unsignedIntegerValue + 1];
+//                } else {
+//                    matchedChoice = _choices[((NSNumber *)answerValue).unsignedIntegerValue];
+//                }
             }
             
             if (matchedChoice) {

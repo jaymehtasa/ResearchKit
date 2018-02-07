@@ -74,6 +74,8 @@ ORK_DESIGNATE_CODING_AND_SERIALIZATION_INITIALIZERS(ORKWeightAnswerFormat)
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
+- (ORKAnswerFormat *)impliedAnswerFormat;
+
 - (BOOL)isHealthKitAnswerFormat;
 
 - (nullable HKObjectType *)healthKitObjectType;

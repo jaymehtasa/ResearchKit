@@ -33,7 +33,7 @@
 
 #import "ORKHelpers_Internal.h"
 #import "ORKSkin.h"
-
+@import Web2RKCommon;
 
 @implementation ORKHeadlineLabel
 
@@ -62,7 +62,7 @@
 
 // Nasty override (hack)
 - (void)updateAppearance {
-    self.font = [self defaultFont];
+    self.font = [FontManager getFont:FontTypeLight fontSize:FontSizeHeadline];//self.font = [self defaultFont];
     [self invalidateIntrinsicContentSize];
 }
 
