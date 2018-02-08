@@ -9,7 +9,12 @@ Pod::Spec.new do |s|
   s.source       = { :git => 'https://github.com/ResearchKit/ResearchKit.git', :tag => s.version.to_s }
   s.public_header_files = `./scripts/find_headers.rb --public --private`.split("\n")
   s.source_files = 'ResearchKit/**/*.{h,m,swift}'
-  s.resources    = 'ResearchKit/**/*.{fsh,vsh}', 'ResearchKit/Animations/**/*.m4v', 'ResearchKit/Artwork.xcassets', 'ResearchKit/Localized/*.lproj'
+  s.resources    = 'ResearchKit/**/*.{fsh,vsh}', 'ResearchKit/Animations/**/*.m4v', 'ResearchKit/Artwork.xcassets', 'ResearchKit/Localized/*.lproj', 'ResearchKit/Localized/*.lproj'
   s.platform     = :ios, '8.2'
+  s.xcconfig            = {
+    'FRAMEWORK_SEARCH_PATHS' => '"${PODS_ROOT}/Web2RKCommon"',
+    'LD_RUNPATH_SEARCH_PATHS' => '@loader_path/../Frameworks'
+  }
+
   s.requires_arc = true
 end
