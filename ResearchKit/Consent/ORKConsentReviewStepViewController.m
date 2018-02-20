@@ -69,6 +69,7 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
     NSString *_signatureFirst;
     NSString *_signatureLast;
     UIImage *_signatureImage;
+    NSString *_signatureEmail;
     BOOL _documentReviewed;
     
     NSUInteger _currentPageIndex;
@@ -85,6 +86,8 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
         _signatureFirst = [result.signature givenName];
         _signatureLast = [result.signature familyName];
         _signatureImage = [result.signature signatureImage];
+        _signatureEmail = [result.signature email];
+
         _documentReviewed = NO;
         
         _currentSignature = [result.signature copy];
@@ -164,6 +167,7 @@ typedef NS_ENUM(NSInteger, ORKConsentReviewPhase) {
 static NSString *const _NameFormIdentifier = @"nameForm";
 static NSString *const _GivenNameIdentifier = @"given";
 static NSString *const _FamilyNameIdentifier = @"family";
+static NSString *const _EmailIdentifier = @"email";
 
 - (ORKFormStepViewController *)makeNameFormViewController {
     ORKFormStep *formStep = [[ORKFormStep alloc] initWithIdentifier:_NameFormIdentifier
@@ -186,12 +190,20 @@ static NSString *const _FamilyNameIdentifier = @"family";
                                                      answerFormat:nameAnswerFormat];
     familyNameFormItem.placeholder = ORKLocalizedString(@"CONSENT_NAME_PLACEHOLDER", nil);
     
+    ORKEmailAnswerFormat *emailAnswerFormat = [ORKEmailAnswerFormat emailAnswerFormat];
+    ORKFormItem *emailFormItem = [[ORKFormItem alloc] initWithIdentifier:_EmailIdentifier
+                                                                    text:ORKLocalizedString(@"CONSENT_EMAIL", nil)
+                                                            answerFormat:emailAnswerFormat];
+    emailFormItem.placeholder = ORKLocalizedString(@"CONSENT_EMAIL_PLACEHOLDER", nil);
+
+
     givenNameFormItem.optional = NO;
     familyNameFormItem.optional = NO;
-    
-    NSArray *formItems = @[givenNameFormItem, familyNameFormItem];
+    emailFormItem.optional = NO;
+
+    NSArray *formItems = @[givenNameFormItem, familyNameFormItem, emailFormItem];
     if (ORKCurrentLocalePresentsFamilyNameFirst()) {
-        formItems = @[familyNameFormItem, givenNameFormItem];
+        formItems = @[familyNameFormItem, givenNameFormItem, emailFormItem];
     }
     
     [formStep setFormItems:formItems];
@@ -202,7 +214,10 @@ static NSString *const _FamilyNameIdentifier = @"family";
     givenNameDefault.textAnswer = _signatureFirst;
     ORKTextQuestionResult *familyNameDefault = [[ORKTextQuestionResult alloc] initWithIdentifier:_FamilyNameIdentifier];
     familyNameDefault.textAnswer = _signatureLast;
-    ORKStepResult *defaults = [[ORKStepResult alloc] initWithStepIdentifier:_NameFormIdentifier results:@[givenNameDefault, familyNameDefault]];
+    ORKTextQuestionResult *emailDefault = [[ORKTextQuestionResult alloc] initWithIdentifier:_EmailIdentifier];
+    emailDefault.textAnswer = _signatureEmail;
+
+    ORKStepResult *defaults = [[ORKStepResult alloc] initWithStepIdentifier:_NameFormIdentifier results:@[givenNameDefault, familyNameDefault, emailDefault]];
     
     ORKFormStepViewController *viewController = [[ORKFormStepViewController alloc] initWithStep:formStep result:defaults];
     viewController.delegate = self;
@@ -225,6 +240,11 @@ static NSString *const _FamilyNameIdentifier = @"family";
         if (signature.requiresName) {
             signature.givenName = _signatureFirst;
             signature.familyName = _signatureLast;
+        }
+
+        if (signature.requiresEmail) {
+            NSLog(@"ADDING EMAIL ADDRESS %@", _signatureEmail);
+            signature.email = _signatureEmail;
         }
     }
     
@@ -295,6 +315,10 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
             _currentSignature.signatureImage = _signatureImage;
         }
         
+        if (_currentSignature.requiresEmail) {
+            _currentSignature.email = _signatureEmail;
+        }
+
         if (_currentSignature.signatureDateFormatString.length > 0) {
             NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
             [dateFormatter setDateFormat:_currentSignature.signatureDateFormatString];
@@ -401,6 +425,8 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
         _signatureFirst = (NSString *)fnr.textAnswer;
         ORKTextQuestionResult *lnr = (ORKTextQuestionResult *)[result resultForIdentifier:_FamilyNameIdentifier];
         _signatureLast = (NSString *)lnr.textAnswer;
+        ORKTextQuestionResult *eml = (ORKTextQuestionResult *)[result resultForIdentifier:_EmailIdentifier];
+        _signatureEmail = (NSString *)eml.textAnswer;
         [self notifyDelegateOnResultChange];
         
     } else if ([stepViewController.step.identifier isEqualToString:_SignatureStepIdentifier]) {
@@ -453,6 +479,7 @@ static NSString *const _SignatureStepIdentifier = @"signatureStep";
     _signatureFirst = nil;
     _signatureLast = nil;
     _signatureImage = nil;
+    _signatureEmail = nil;
     _documentReviewed = NO;
     [self notifyDelegateOnResultChange];
     
@@ -463,6 +490,7 @@ static NSString *const _ORKCurrentSignatureRestoreKey = @"currentSignature";
 static NSString *const _ORKSignatureFirstRestoreKey = @"signatureFirst";
 static NSString *const _ORKSignatureLastRestoreKey = @"signatureLast";
 static NSString *const _ORKSignatureImageRestoreKey = @"signatureImage";
+static NSString *const _ORKSignatureEmailRestoreKey = @"signatureEmail";
 static NSString *const _ORKDocumentReviewedRestoreKey = @"documentReviewed";
 static NSString *const _ORKCurrentPageIndexRestoreKey = @"currentPageIndex";
 
@@ -472,6 +500,7 @@ static NSString *const _ORKCurrentPageIndexRestoreKey = @"currentPageIndex";
     [coder encodeObject:_currentSignature forKey:_ORKCurrentSignatureRestoreKey];
     [coder encodeObject:_signatureFirst forKey:_ORKSignatureFirstRestoreKey];
     [coder encodeObject:_signatureLast forKey:_ORKSignatureLastRestoreKey];
+    [coder encodeObject:_signatureEmail forKey:_ORKSignatureEmailRestoreKey];
     [coder encodeObject:_signatureImage forKey:_ORKSignatureImageRestoreKey];
     [coder encodeBool:_documentReviewed forKey:_ORKDocumentReviewedRestoreKey];
     [coder encodeInteger:_currentPageIndex forKey:_ORKCurrentPageIndexRestoreKey];
@@ -486,6 +515,7 @@ static NSString *const _ORKCurrentPageIndexRestoreKey = @"currentPageIndex";
     _signatureFirst = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureFirstRestoreKey];
     _signatureLast = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureLastRestoreKey];
     _signatureImage = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureImageRestoreKey];
+    _signatureEmail = [coder decodeObjectOfClass:[NSString class] forKey:_ORKSignatureEmailRestoreKey];
     _documentReviewed = [coder decodeBoolForKey:_ORKDocumentReviewedRestoreKey];
     _currentPageIndex = [coder decodeIntegerForKey:_ORKCurrentPageIndexRestoreKey];
     

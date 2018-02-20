@@ -161,10 +161,18 @@
 @implementation ORKFormItem
 
 - (instancetype)initWithIdentifier:(NSString *)identifier text:(NSString *)text answerFormat:(ORKAnswerFormat *)answerFormat {
-    return [self initWithIdentifier:identifier text:text answerFormat:answerFormat optional:YES];
+    return [self initWithIdentifier:identifier text:text answerFormat:answerFormat optional:YES hidden: NO];
 }
 
-- (instancetype)initWithIdentifier:(NSString *)identifier text:(NSString *)text answerFormat:(ORKAnswerFormat *)answerFormat optional:(BOOL)optional {
+- (instancetype)initWithIdentifier:(NSString *)identifier text:(NSString *)text answerFormat:(ORKAnswerFormat *)answerFormat optional:(BOOL) optional {
+    return [self initWithIdentifier:identifier text:text answerFormat:answerFormat optional:optional hidden: NO];
+}
+
+- (instancetype)initWithIdentifier:(NSString *)identifier text:(NSString *)text answerFormat:(ORKAnswerFormat *)answerFormat hidden:(BOOL) hidden {
+    return [self initWithIdentifier:identifier text:text answerFormat:answerFormat optional:YES hidden: hidden];
+}
+
+- (instancetype)initWithIdentifier:(NSString *)identifier text:(NSString *)text answerFormat:(ORKAnswerFormat *)answerFormat optional:(BOOL) optional hidden:(BOOL) hidden {
     self = [super init];
     if (self) {
         ORKThrowInvalidArgumentExceptionIfNil(identifier);
@@ -172,6 +180,7 @@
         _text = [text copy];
         _answerFormat = [answerFormat copy];
         _optional = optional;
+        _hidden = hidden;
     }
     return self;
 }
@@ -212,6 +221,7 @@
     ORKFormItem *item = [[[self class] allocWithZone:zone] initWithIdentifier:[_identifier copy] text:[_text copy] answerFormat:[_answerFormat copy]];
     item.optional = _optional;
     item.placeholder = _placeholder;
+    item.hidden = _hidden;
     return item;
 }
 
@@ -220,6 +230,7 @@
     if (self) {
         ORK_DECODE_OBJ_CLASS(aDecoder, identifier, NSString);
         ORK_DECODE_BOOL(aDecoder, optional);
+        ORK_DECODE_BOOL(aDecoder, hidden);
         ORK_DECODE_OBJ_CLASS(aDecoder, text, NSString);
         ORK_DECODE_OBJ_CLASS(aDecoder, placeholder, NSString);
         ORK_DECODE_OBJ_CLASS(aDecoder, answerFormat, ORKAnswerFormat);
@@ -231,6 +242,7 @@
 - (void)encodeWithCoder:(NSCoder *)aCoder {
     ORK_ENCODE_OBJ(aCoder, identifier);
     ORK_ENCODE_BOOL(aCoder, optional);
+    ORK_ENCODE_BOOL(aCoder, hidden);
     ORK_ENCODE_OBJ(aCoder, text);
     ORK_ENCODE_OBJ(aCoder, placeholder);
     ORK_ENCODE_OBJ(aCoder, answerFormat);
