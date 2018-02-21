@@ -36,6 +36,7 @@
 #import "ORKHelpers_Internal.h"
 #import "ORKSkin.h"
 
+@import Web2RKCommon;
 
 @interface ORKConsentLearnMoreViewController () <UIWebViewDelegate>
 
@@ -86,7 +87,10 @@
         
         [_webView loadRequest:[NSURLRequest requestWithURL:_contentURL]];
     } else {
-        [_webView loadHTMLString:self.content baseURL:ORKCreateRandomBaseURL()];
+        UIFont *font = [FontManager getFont:FontTypeRegular fontSize:FontSizeTiny];
+        NSString *fontAppliedContent = [NSString stringWithFormat:@"<font face='%@' size='3'>%@",font.fontName ,self.content];
+
+        [_webView loadHTMLString:fontAppliedContent baseURL:ORKCreateRandomBaseURL()];
     }
     
     _webView.delegate = self;
@@ -96,6 +100,9 @@
     [self setUpConstraints];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
+
+    [self.navigationController.navigationBar setTitleTextAttributes:
+     @{NSFontAttributeName:[FontManager getFont:FontTypeRegular fontSize:FontSizeBasic]}];
 }
 
 - (void)setUpConstraints {

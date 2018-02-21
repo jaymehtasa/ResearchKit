@@ -2334,6 +2334,16 @@ static NSArray *ork_processTextChoices(NSArray<ORKTextChoice *> *textChoices) {
                                        reason:@"Both regular expression and invalid message properties must be set."
                                      userInfo:nil];
     }
+
+    NSError *error;
+    if (self.validationRegex && ![[NSRegularExpression alloc] initWithPattern:self.validationRegex
+                                                                      options:NSRegularExpressionCaseInsensitive
+                                                                        error:&error]) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                       reason:@"Validation regex is not valid."
+                                     userInfo:error.userInfo];
+    }
+
 }
 
 - (instancetype)copyWithZone:(NSZone *)zone {

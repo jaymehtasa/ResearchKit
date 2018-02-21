@@ -37,7 +37,7 @@
 #import "ORKTypes.h"
 
 #import <CoreText/CoreText.h>
-
+@import Web2RKCommon;
 
 NSURL *ORKCreateRandomBaseURL() {
     return [NSURL URLWithString:[NSString stringWithFormat:@"http://researchkit.%@/", [NSUUID UUID].UUIDString]];

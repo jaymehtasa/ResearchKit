@@ -38,7 +38,7 @@
 
 #import "ORKHelpers_Internal.h"
 #import "ORKSkin.h"
-
+@import Web2RKCommon;
 
 @interface ORKConsentReviewController () <UIWebViewDelegate>
 
@@ -74,7 +74,11 @@
     self.view.backgroundColor = ORKColor(ORKBackgroundColorKey);
     
     _webView = [UIWebView new];
-    [_webView loadHTMLString:_htmlString baseURL:ORKCreateRandomBaseURL()];
+
+    UIFont *font = [FontManager getFont:FontTypeRegular fontSize:FontSizeTiny];
+    NSString *fontAppliedHTMLString = [NSString stringWithFormat:@"<font face='%@' size='3'>%@",font.fontName ,_htmlString];
+
+    [_webView loadHTMLString:fontAppliedHTMLString baseURL:ORKCreateRandomBaseURL()];
     _webView.backgroundColor = ORKColor(ORKBackgroundColorKey);
     _webView.scrollView.backgroundColor = ORKColor(ORKBackgroundColorKey);
     _webView.delegate = self;

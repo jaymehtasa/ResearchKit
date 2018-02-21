@@ -30,7 +30,7 @@
 
 
 #import "ORKTextButton.h"
-
+@import Web2RKCommon;
 
 @implementation ORKTextButton
 
@@ -74,7 +74,7 @@
 
 - (void)updateAppearance {
     
-    self.titleLabel.font = [[self class] defaultFont];
+    self.titleLabel.font = [FontManager getFont:FontTypeBold fontSize:FontSizeRegular];//[[self class] defaultFont];
     [self invalidateIntrinsicContentSize];
 
 }

@@ -35,6 +35,7 @@
 #import "ORKAccessibility.h"
 #import "ORKSkin.h"
 
+@import Web2RKCommon;
 
 static NSString *const EmptyBulletString = @"\u25CB";
 static NSString *const FilledBulletString = @"\u25CF";
@@ -414,6 +415,7 @@ static const UIEdgeInsets paddingGuess = (UIEdgeInsets){.left = 2, .right = 6};
         _textField = [[ORKUnitTextField alloc] init];
         _textField.clearButtonMode = UITextFieldViewModeWhileEditing;
         _textField.translatesAutoresizingMaskIntoConstraints = NO;
+        _textField.font = [FontManager getFont:FontTypeLight fontSize:FontSizeRegular];
         [self addSubview:_textField];
         [self setUpConstraints];
     }

@@ -33,6 +33,7 @@
 
 #import "ORKHelpers_Internal.h"
 
+@import Web2RKCommon;
 
 @implementation ORKLabel
 
@@ -66,7 +67,7 @@
 }
 
 - (void)updateAppearance {
-    self.font = [[self class] defaultFont];
+    self.font = [FontManager getFont:FontTypeLight fontSize:FontSizeRegular];//[[self class] defaultFont];
     [self invalidateIntrinsicContentSize];
 }
 
