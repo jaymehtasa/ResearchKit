@@ -12,4 +12,5 @@ Pod::Spec.new do |s|
   s.resources    = 'ResearchKit/**/*.{fsh,vsh}', 'ResearchKit/Animations/**/*.m4v', 'ResearchKit/Artwork.xcassets', 'ResearchKit/Localized/*.lproj'
   s.platform     = :ios, '8.2'
   s.requires_arc = true
+  s.dependency 'Web2RKCommon', :git => 'https://github.com/jaymehtasa/Web2RKCommon.git'
 end
